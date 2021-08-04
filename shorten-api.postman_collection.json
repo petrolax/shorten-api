@@ -1,0 +1,170 @@
+{
+	"info": {
+		"_postman_id": "67c657f6-f650-4339-9052-339414be0927",
+		"name": "shorten-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Сделать укороченный url",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.environment.set(\"shorturl\", jsonData.Result);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080?url=https://google.com",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"query": [
+						{
+							"key": "url",
+							"value": "https://google.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить все короткие url",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/delete",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запросить n-страницу со списком существующих сокращений",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/list/{{page}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"list",
+						"{{page}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запросить сайт по укороченному url",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/{{shorturl}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{shorturl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запросить оригинальный url",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.environment.set(\"originalurl\", jsonData.Result);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/{{shorturl}}/original",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{shorturl}}",
+						"original"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить определённый укороченный url",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"shorturl\", \"\");",
+							"pm.environment.set(\"originalurl\", \"\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/{{shorturl}}/delete",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{shorturl}}",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
