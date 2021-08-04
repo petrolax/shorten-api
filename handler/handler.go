@@ -47,6 +47,7 @@ func (h *Handler) NewShorten(c *gin.Context) {
 		return
 	}
 
+	// Не лучший способ проверить существование сайта, но самый простой
 	resp, err := http.Get(url)
 	if err != nil {
 		h.log.Printf("NewShorten:Error: URL - '%s' is like a simple string", url)
