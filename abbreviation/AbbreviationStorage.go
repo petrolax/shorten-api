@@ -14,6 +14,7 @@ import (
 type AbbreviationStorage struct {
 	file *os.File
 	list map[string]string
+	keys []string
 	mu   sync.Mutex
 }
 
@@ -21,9 +22,14 @@ func NewAbbreviationStorage(file *os.File) *AbbreviationStorage {
 	list := make(map[string]string)
 	data, _ := ioutil.ReadFile(file.Name())
 	_ = json.Unmarshal(data, &list)
+	keys := make([]string, 0)
+	for k := range list {
+		keys = append(keys, k)
+	}
 	return &AbbreviationStorage{
 		file: file,
 		list: list,
+		keys: keys,
 	}
 }
 
@@ -36,6 +42,7 @@ func (as *AbbreviationStorage) CreateNewShortenUrl(url string) (string, error) {
 		shorturl = sid.MustGenerate()
 		if _, ok := as.list[shorturl]; !ok {
 			as.list[shorturl] = url
+			as.keys = append(as.keys, shorturl)
 			break
 		}
 	}
@@ -58,24 +65,22 @@ func (as *AbbreviationStorage) GetLengthenUrl(shorturl string) (string, error) {
 func (as *AbbreviationStorage) GetListOfAbbreviations(page int) (map[string]string, error) {
 	as.mu.Lock()
 	defer as.mu.Unlock()
+	countOfAbbreviationBegin := 0
 	countOfAbbreviationEnd := 5 * page
 	if countOfAbbreviationEnd > len(as.list) {
 		countOfAbbreviationEnd = len(as.list)
 	}
-	countOfAbbreviationBegin := countOfAbbreviationEnd - 5
 
-	i := 0
+	if countOfAbbreviationEnd%5 == 0 {
+		countOfAbbreviationBegin = countOfAbbreviationEnd - 5
+	} else {
+		countOfAbbreviationBegin = countOfAbbreviationEnd - (countOfAbbreviationEnd % 5)
+	}
+
 	res := make(map[string]string)
-	for shorturl, url := range as.list {
-		if i < countOfAbbreviationBegin {
-			i++
-			continue
-		}
-		if i > countOfAbbreviationEnd {
-			break
-		}
-		res[shorturl] = url
-		i++
+	for i := countOfAbbreviationBegin; i < countOfAbbreviationEnd; i++ {
+		key := as.keys[i]
+		res[key] = as.list[key]
 	}
 	return res, nil
 }
@@ -83,11 +88,13 @@ func (as *AbbreviationStorage) GetListOfAbbreviations(page int) (map[string]stri
 func (as *AbbreviationStorage) DeleteAllShortenUrl() error {
 	as.mu.Lock()
 	defer as.mu.Unlock()
-	for key := range as.list {
+	for _, key := range as.keys {
 		delete(as.list, key)
 	}
+	as.keys = nil
 	data, _ := json.Marshal(as.list)
 	_ = ioutil.WriteFile(as.file.Name(), data, 0644)
+
 	return nil
 }
 
@@ -98,6 +105,12 @@ func (as *AbbreviationStorage) DeleteShortenUrl(shorturl string) error {
 		return errors.New(fmt.Sprintf("Abbreviation %s doesn't exist", shorturl))
 	}
 	delete(as.list, shorturl)
+	for i, key := range as.keys {
+		if key == shorturl {
+			as.keys = append(as.keys[:i], as.keys[i+1:]...)
+			break
+		}
+	}
 	data, _ := json.Marshal(as.list)
 	_ = ioutil.WriteFile(as.file.Name(), data, 0644)
 	return nil
