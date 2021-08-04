@@ -47,7 +47,7 @@ func (h *Handler) NewShorten(c *gin.Context) {
 		return
 	}
 
-	// Не лучший способ проверить существование сайта, но самый простой
+	// Не лучший способ проверить URL и его работоспособность, но самый простой
 	resp, err := http.Get(url)
 	if err != nil {
 		h.log.Printf("NewShorten:Error: URL - '%s' is like a simple string", url)
@@ -74,6 +74,7 @@ func (h *Handler) RemoveAllShorten(c *gin.Context) {
 		serverResponse(c, http.StatusBadRequest, "", "", err.Error())
 		return
 	}
+	
 	serverResponse(c, http.StatusOK, "Every abbreviations was delete", "", "")
 	h.log.Println("RemoveAllShorten: Every abbreviations was delete")
 }
@@ -87,12 +88,14 @@ func (h *Handler) GetList(c *gin.Context) {
 		serverResponse(c, http.StatusBadRequest, "Page number isn't number type", "", err.Error())
 		return
 	}
+	
 	list, err := h.storage.GetListOfAbbreviations(npage)
 	if err != nil {
 		h.log.Printf("GetList:Error: %s\n", err.Error())
 		serverResponse(c, http.StatusBadRequest, "", "", err.Error())
 		return
 	}
+	
 	h.log.Printf("GetList: page %d available\n", npage)
 	serverResponse(c, http.StatusOK, "List of abbreviations", list, "")
 }
@@ -105,6 +108,7 @@ func (h *Handler) RedirectFromShorten(c *gin.Context) {
 		serverResponse(c, http.StatusBadRequest, "", "", err.Error())
 		return
 	}
+	
 	h.log.Printf("RedirectFromShorten: Redirect from shorten: %s to url: %s\n", shorturl, mainurl)
 	c.Redirect(http.StatusMovedPermanently, mainurl)
 }
@@ -117,6 +121,7 @@ func (h *Handler) GetOriginal(c *gin.Context) {
 		serverResponse(c, http.StatusBadRequest, "", "", err.Error())
 		return
 	}
+	
 	h.log.Printf("GetOriginal: Short URL %s: %s\n", shorturl, mainurl)
 	serverResponse(c, http.StatusOK, "Main url of shorten "+shorturl, mainurl, "")
 }
@@ -129,6 +134,7 @@ func (h *Handler) RemoveShorten(c *gin.Context) {
 		serverResponse(c, http.StatusBadRequest, "", "", err.Error())
 		return
 	}
+	
 	serverResponse(c, http.StatusOK, "Short url "+shorturl+" was delete", "", "")
 	h.log.Printf("RemoveShorten: Short URL - %s was delete\n", shorturl)
 }
