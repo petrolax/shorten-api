@@ -4,7 +4,10 @@
 * Сделана простая проверка на существование задаваемого пользователем url, поэтому все вводимые URL должны быть с припиской протокола (http:// или https://). Пример url, который примет программа: 'https://google.com', а 'google.com' - не примет.
 
 ## Использование
-1. Установите проект на локальную машину с помощью команды git clone https://github.com/petrolax/shorten-api
+1. Установите проект на локальную машину с помощью команды 
+  ```bash
+    git clone https://github.com/petrolax/shorten-api
+  ```
 2. Импортируйте файлы shorten-api.postman_environment.json и shorten-api.postman_collection.json в postman и выберете в правом верхнем углу окружение под названием shorten-api
 3. Запустите проект с помощью команды 
   ```bash
