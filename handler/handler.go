@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -18,11 +19,11 @@ type Storage interface {
 }
 
 type Handler struct {
-	storage *Storage
+	storage Storage
 	log     *log.Logger
 }
 
-func NewHandler(storage *Storage) *Handler {
+func NewHandler(storage Storage) *Handler {
 	return &Handler{
 		storage: storage,
 		log:     log.New(os.Stdout, "", log.LstdFlags),
@@ -45,14 +46,23 @@ func (h *Handler) NewShorten(c *gin.Context) {
 		serverResponse(c, http.StatusBadRequest, "", "", "URL is empty")
 		return
 	}
-	// Тут должна быть куча проверок протоколов, доменов, чтобы убедиться, что это реально ссылка, а не набор букв
-	// Либо можно сделать простой get запрос и убедиться, что не возвращает ошибки и что статус 200 (успешный)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		h.log.Printf("NewShorten:Error: URL - '%s' is like a simple string", url)
+		serverResponse(c, http.StatusBadRequest, fmt.Sprintf("NewShorten:Error: URL - '%s' is like a simple string", url), "", err.Error())
+		return
+	}
+	resp.Body.Close()
+
 	shorturl, err := h.storage.CreateNewShortenUrl(url)
 	if err != nil {
 		h.log.Printf("NewShorten:Error: %s\n", err.Error())
 		serverResponse(c, http.StatusNotAcceptable, "", "", err.Error())
 		return
 	}
+
+	shorturl = "localhost:8080/" + shorturl
 	h.log.Printf("NewShorten: param - %s\n", url)
 	serverResponse(c, http.StatusOK, "New shorten url created", shorturl, "")
 }

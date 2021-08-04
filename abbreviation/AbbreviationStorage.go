@@ -18,7 +18,6 @@ type AbbreviationStorage struct {
 }
 
 func NewAbbreviationStorage(file *os.File) *AbbreviationStorage {
-	var mutex sync.Mutex
 	list := make(map[string]string)
 	data, _ := ioutil.ReadFile(file.Name())
 	if len(data) > 1 {
@@ -27,7 +26,6 @@ func NewAbbreviationStorage(file *os.File) *AbbreviationStorage {
 	return &AbbreviationStorage{
 		file: file,
 		list: list,
-		mu:   mutex,
 	}
 }
 

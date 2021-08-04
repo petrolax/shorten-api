@@ -4,19 +4,19 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	as "github.com/petrolax/shorten-api/AbbreviationStorage"
+	a "github.com/petrolax/shorten-api/abbreviation"
 	"github.com/petrolax/shorten-api/handler"
 )
 
 func main() {
 
-	file, err := os.OpenFile("test.json", os.O_CREATE, 0644)
+	file, err := os.OpenFile("data/test.json", os.O_CREATE, 0644)
 	if err != nil {
 		panic("Can't open file")
 	}
 	defer file.Close()
 
-	storage := as.NewAbbreviationStorage(file)
+	storage := a.NewAbbreviationStorage(file)
 	h := handler.NewHandler(storage)
 
 	router := gin.Default()
