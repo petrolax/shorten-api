@@ -65,6 +65,9 @@ func (as *AbbreviationStorage) GetLengthenUrl(shorturl string) (string, error) {
 func (as *AbbreviationStorage) GetListOfAbbreviations(page int) (map[string]string, error) {
 	as.mu.Lock()
 	defer as.mu.Unlock()
+	if len(as.keys) == 0 {
+		return map[string]string{}, nil
+	}
 	countOfAbbreviationBegin := 0
 	countOfAbbreviationEnd := 5 * page
 	if countOfAbbreviationEnd > len(as.list) {
