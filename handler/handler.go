@@ -62,7 +62,6 @@ func (h *Handler) NewShorten(c *gin.Context) {
 		return
 	}
 
-	shorturl = "localhost:8080/" + shorturl
 	h.log.Printf("NewShorten: param - %s\n", url)
 	serverResponse(c, http.StatusOK, "New shorten url created", shorturl, "")
 }
