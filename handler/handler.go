@@ -109,15 +109,15 @@ func (h *Handler) RedirectFromShorten(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, mainurl)
 }
 
-func (h *Handler) GetLengthen(c *gin.Context) {
+func (h *Handler) GetOriginal(c *gin.Context) {
 	shorturl := c.Param("shorturl")
 	mainurl, err := h.storage.GetLengthenUrl(shorturl)
 	if err != nil {
-		h.log.Printf("GetLengthen:Error: %s\n", err.Error())
+		h.log.Printf("GetOriginal:Error: %s\n", err.Error())
 		serverResponse(c, http.StatusBadRequest, "", "", err.Error())
 		return
 	}
-	h.log.Printf("GetLengthen: Short URL %s: %s\n", shorturl, mainurl)
+	h.log.Printf("GetOriginal: Short URL %s: %s\n", shorturl, mainurl)
 	serverResponse(c, http.StatusOK, "Main url of shorten "+shorturl, mainurl, "")
 }
 

@@ -26,7 +26,7 @@ func main() {
 	router.GET("/list/:page", h.GetList)         // Передать в json список первых 10-ти сокращений
 
 	router.GET("/:shorturl", h.RedirectFromShorten)    // Перейти на зашифрованный сайт
-	router.GET("/:shorturl/lengthen", h.GetLengthen)   // Получить из json сокращённый URL и вернуть полноценный вариант
+	router.GET("/:shorturl/original", h.GetOriginal)   // Получить из json сокращённый URL и вернуть полноценный вариант
 	router.DELETE(":shorturl/delete", h.RemoveShorten) // Удалить конкретную ссылку из списка сокращений
 
 	router.Run(":8080")
