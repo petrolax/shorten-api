@@ -20,9 +20,7 @@ type AbbreviationStorage struct {
 func NewAbbreviationStorage(file *os.File) *AbbreviationStorage {
 	list := make(map[string]string)
 	data, _ := ioutil.ReadFile(file.Name())
-	if len(data) > 1 {
-		_ = json.Unmarshal(data, &list)
-	}
+	_ = json.Unmarshal(data, &list)
 	return &AbbreviationStorage{
 		file: file,
 		list: list,
